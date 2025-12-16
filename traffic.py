@@ -1,8 +1,3 @@
-#import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = ""  # harmless on Mac; forces "no GPU" mindset
-#import tensorflow as tf
-#tf.config.set_visible_devices([], "GPU")
-
 import os
 import cv2
 import numpy as np
@@ -15,6 +10,7 @@ IMG_WIDTH = 30
 IMG_HEIGHT = 30
 NUM_CATEGORIES = 43
 TEST_SIZE = 0.4
+
 
 def main():
 
@@ -104,6 +100,7 @@ def get_model():
         metrics=["accuracy"],
     )
     return model
+
 
 if __name__ == "__main__":
     main()
