@@ -1,3 +1,12 @@
 opencv-python
 scikit-learn
 tensorflow
+
+
+
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00001_00009.ppm
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00001_00020.ppm
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00001_00021.ppm
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00001_00022.ppm
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00001_00023.ppm
+/Users/naraptis/Desktop/cs550-2024-traffic/gtsrb/1/00002_00000.ppm
