@@ -3,6 +3,7 @@
 #import tensorflow as tf
 #tf.config.set_visible_devices([], "GPU")
 
+import os
 import cv2
 import numpy as np
 import os
@@ -62,23 +63,31 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-
-    project_root = Path(__file__).resolve().parent
-    data_root = project_root / Path(data_dir)
+    
     images = []
     labels = []
-    for category_dir in sorted(data_root.iterdir()):
-        if not category_dir.is_dir():
+
+    for label in os.listdir(data_dir):
+        label_path = os.path.join(data_dir, label)
+
+        if not os.path.isdir(label_path):
             continue
-        label = int(category_dir.name)
-        for img_path in category_dir.iterdir():
-            img = cv2.imread(str(img_path))
+
+        label_int = int(label)
+
+        for filename in os.listdir(label_path):
+            file_path = os.path.join(label_path, filename)
+
+            img = cv2.imread(file_path)
             if img is None:
                 continue
+
             img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
             img = img.astype("float32") / 255.0
+
             images.append(img)
-            labels.append(label)
+            labels.append(label_int)
+
     return images, labels
 
 def get_model():
@@ -90,7 +99,7 @@ def get_model():
 
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-        tf.keras.layers.Conv2D(32, (3, 3), padding="same", use_bias=False),
+        tf.keras.layers.Conv2D(64, (3, 3), padding="same", use_bias=False),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Activation("relu"),
         tf.keras.layers.MaxPooling2D((2, 2)),
