@@ -90,11 +90,11 @@ def get_model():
 
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-        tf.keras.layers.Conv2D(NUM_CATEGORIES * 2, (3, 3), padding="same", use_bias=False),
+        tf.keras.layers.Conv2D(32, (3, 3), padding="same", use_bias=False),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Activation("relu"),
         tf.keras.layers.MaxPooling2D((2, 2)),
-        tf.keras.layers.Conv2D(NUM_CATEGORIES * 2, (3, 3), padding="same", use_bias=True, activation="relu"),
+        tf.keras.layers.Conv2D(64, (3, 3), padding="same", use_bias=True, activation="relu"),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(NUM_CATEGORIES * 2),
