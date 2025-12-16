@@ -6,10 +6,8 @@
 import os
 import cv2
 import numpy as np
-import os
 import sys
 import tensorflow as tf
-from pathlib import Path
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
@@ -63,31 +61,22 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
-    
     images = []
     labels = []
-
     for label in os.listdir(data_dir):
         label_path = os.path.join(data_dir, label)
-
         if not os.path.isdir(label_path):
             continue
-
         label_int = int(label)
-
         for filename in os.listdir(label_path):
             file_path = os.path.join(label_path, filename)
-
             img = cv2.imread(file_path)
             if img is None:
                 continue
-
             img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
             img = img.astype("float32") / 255.0
-
             images.append(img)
             labels.append(label_int)
-
     return images, labels
 
 def get_model():
@@ -96,7 +85,6 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
-
     model = tf.keras.Sequential([
         tf.keras.layers.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
         tf.keras.layers.Conv2D(64, (3, 3), padding="same", use_bias=False),
@@ -110,17 +98,12 @@ def get_model():
         tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax"),
     ])
-
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
         loss="categorical_crossentropy",
         metrics=["accuracy"],
     )
-
     return model
-
-
-
 
 if __name__ == "__main__":
     main()
