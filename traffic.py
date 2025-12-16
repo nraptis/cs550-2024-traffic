@@ -1,10 +1,14 @@
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""  # harmless on Mac; forces "no GPU" mindset
+#import tensorflow as tf
+#tf.config.set_visible_devices([], "GPU")
+
 import cv2
 import numpy as np
 import os
 import sys
 import tensorflow as tf
 from pathlib import Path
-
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 10
@@ -21,26 +25,6 @@ def main():
 
     # Get image arrays and labels for all image files
     images, labels = load_data(sys.argv[1])
-
-    if images:
-        min_width = images[0].shape[0]
-        min_height = images[0].shape[1]
-        max_width = images[0].shape[0]
-        max_height = images[0].shape[1]
-        for image in images:
-            width = images[0].shape[0]
-            height = images[0].shape[1]
-            min_width = min(min_width, width)
-            max_width = max(max_width, width)
-            min_height = min(min_height, height)
-            max_height = max(max_height, height)
-        print("min_width = ", min_width)
-        print("min_height = ", min_height)
-        print("max_width = ", max_width)
-        print("min_hmax_heighteight = ", max_height)
-        
-        
-        
 
     # Split data into training and testing sets
     labels = tf.keras.utils.to_categorical(labels)
@@ -81,10 +65,6 @@ def load_data(data_dir):
 
     project_root = Path(__file__).resolve().parent
     data_root = project_root / Path(data_dir)
-    print("data_root = ", data_root)
-    print("exists:", data_root.exists())
-    print("is_dir:", data_root.is_dir())
-
     images = []
     labels = []
     for category_dir in sorted(data_root.iterdir()):
@@ -96,10 +76,10 @@ def load_data(data_dir):
             if img is None:
                 continue
             img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
+            img = img.astype("float32") / 255.0
             images.append(img)
-            labels.append(label) 
+            labels.append(label)
     return images, labels
-
 
 def get_model():
     """
@@ -107,6 +87,29 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
+
+    model = tf.keras.Sequential([
+        tf.keras.layers.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+        tf.keras.layers.Conv2D(NUM_CATEGORIES * 2, (3, 3), padding="same", use_bias=False),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Activation("relu"),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Conv2D(NUM_CATEGORIES * 2, (3, 3), padding="same", use_bias=True, activation="relu"),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(NUM_CATEGORIES * 2),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(NUM_CATEGORIES, activation="softmax"),
+    ])
+
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+        loss="categorical_crossentropy",
+        metrics=["accuracy"],
+    )
+
+    return model
+
 
 
 
